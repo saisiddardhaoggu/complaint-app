@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 30px;
+            color: white;
+        }
+
+        table {
+            background: white;
+            color: black;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        a {
+            color: yellow;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Complaints Dashboard</h2>
+
+<a href="/change_password">Change Password</a> |
+<a href="/logout">Logout</a>
+
+<br><br>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Branch</th>
+    <th>College</th>
+    <th>Description</th>
+    <th>Date</th>
+</tr>
+
+{% for c in complaints %}
+<tr>
+    <td>{{ c[0] }}</td>
+    <td>{{ c[1] }}</td>
+    <td>{{ c[2] }}</td>
+    <td>{{ c[3] }}</td>
+    <td>{{ c[4] }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
