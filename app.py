@@ -115,3 +115,12 @@ def change_password():
 def logout():
     session.pop("user", None)
     return redirect("/login")
+@app.route("/clear")
+def clear():
+    import sqlite3
+    conn = sqlite3.connect("complaints.db")
+    cur = conn.cursor()
+    cur.execute("DELETE FROM complaints")
+    conn.commit()
+    conn.close()
+    return "Complaints cleared successfully!"
