@@ -1,27 +1,28 @@
-import sqlite3
 import os
+import psycopg2
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "complaints.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def get_conn():
+    return psycopg2.connect(DATABASE_URL)
+
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     cur = conn.cursor()
 
-    # Complaints table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS complaints (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         phone TEXT,
-        date TEXT,
         branch TEXT,
         college TEXT,
-        description TEXT
+        description TEXT,
+        date TEXT
     )
     """)
 
-    # Users table (principal login)
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users (
         username TEXT,
@@ -29,11 +30,10 @@ def init_db():
     )
     """)
 
-    # Default principal login create
     cur.execute("SELECT * FROM users")
     if not cur.fetchall():
         cur.execute(
-            "INSERT INTO users VALUES (?, ?)",
+            "INSERT INTO users VALUES (%s, %s)",
             ("principal", "admin123")
         )
 
@@ -41,42 +41,25 @@ def init_db():
     conn.close()
 
 
-def insert_complaint(name, phone, date, branch, college, description):
-    conn = sqlite3.connect(DB_PATH)
+def insert_complaint(name, phone, branch, college, description, date):
+    conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute("""
-    INSERT INTO complaints
-    (name, phone, date, branch, college, description)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """, (name, phone, date, branch, college, description))
+    cur.execute(
+        "INSERT INTO complaints VALUES (%s,%s,%s,%s,%s,%s)",
+        (name, phone, branch, college, description, date),
+    )
 
     conn.commit()
     conn.close()
 
 
 def get_complaints():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute("""
-    SELECT name, branch, college, description, date
-    FROM complaints
-    ORDER BY id DESC
-    """)
-
+    cur.execute("SELECT * FROM complaints")
     data = cur.fetchall()
+
     conn.close()
     return data
-
-def update_password(username, new_password):
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-
-    cur.execute(
-        "UPDATE users SET password=? WHERE username=?",
-        (new_password, username),
-    )
-
-    conn.commit()
-    conn.close()
