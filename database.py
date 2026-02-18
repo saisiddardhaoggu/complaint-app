@@ -24,21 +24,19 @@ def init_db():
     """)
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT,
-        password TEXT
+CREATE TABLE IF NOT EXISTS users (
+    username TEXT PRIMARY KEY,
+    password TEXT
+)
+""")
+
+
+    cur.execute("SELECT * FROM users WHERE username=%s", ("principal",))
+    if not cur.fetchone():
+     cur.execute(
+        "INSERT INTO users VALUES (%s,%s)",
+        ("principal", "admin123"),
     )
-    """)
-
-    cur.execute("SELECT * FROM users")
-    if not cur.fetchall():
-        cur.execute(
-            "INSERT INTO users VALUES (%s, %s)",
-            ("principal", "admin123")
-        )
-
-    conn.commit()
-    conn.close()
 
 
 def insert_complaint(name, phone, branch, college, description, date):
@@ -68,18 +66,10 @@ def update_password(new_password):
     conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM users WHERE username=%s", ("principal",))
-    if not cur.fetchone():
-        cur.execute(
-            "INSERT INTO users VALUES (%s,%s)",
-            ("principal", new_password),
-        )
-    else:
-        cur.execute(
-            "UPDATE users SET password=%s WHERE username=%s",
-            (new_password, "principal"),
-        )
+    cur.execute(
+        "UPDATE users SET password=%s WHERE username=%s",
+        (new_password, "principal"),
+    )
 
     conn.commit()
     conn.close()
-
