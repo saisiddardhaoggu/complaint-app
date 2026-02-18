@@ -7,6 +7,7 @@ from database import get_complaints
 from datetime import datetime
 from flask import session, redirect, url_for
 from database import update_password
+init_db()
 import os
 
 
@@ -99,14 +100,11 @@ def dashboard():
     complaints = get_complaints()
     return render_template("dashboard.html", complaints=complaints)
 
-@app.route("/change_password", methods=["GET", "POST"])
+@app.route("/change-password", methods=["GET", "POST"])
 def change_password():
-    if "user" not in session:
-        return redirect("/login")
-
     if request.method == "POST":
         new_password = request.form.get("password")
-        update_password(session["user"], new_password)
+        update_password(new_password)
         return redirect("/dashboard")
 
     return render_template("change_password.html")
