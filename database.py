@@ -68,10 +68,18 @@ def update_password(new_password):
     conn = get_conn()
     cur = conn.cursor()
 
-    cur.execute(
-        "UPDATE users SET password=%s WHERE username=%s",
-        (new_password, "principal"),
-    )
+    cur.execute("SELECT * FROM users WHERE username=%s", ("principal",))
+    if not cur.fetchone():
+        cur.execute(
+            "INSERT INTO users VALUES (%s,%s)",
+            ("principal", new_password),
+        )
+    else:
+        cur.execute(
+            "UPDATE users SET password=%s WHERE username=%s",
+            (new_password, "principal"),
+        )
 
     conn.commit()
     conn.close()
+
