@@ -63,3 +63,15 @@ def get_complaints():
 
     conn.close()
     return data
+
+def update_password(new_password):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "UPDATE users SET password=%s WHERE username=%s",
+        (new_password, "principal"),
+    )
+
+    conn.commit()
+    conn.close()
