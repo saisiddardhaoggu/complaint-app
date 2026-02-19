@@ -104,7 +104,8 @@ def dashboard():
 def change_password():
     if request.method == "POST":
         new_password = request.form.get("password")
-        update_password(new_password)
+        if new_password:
+            update_password("principal", new_password)
         return redirect("/dashboard")
 
     return render_template("change_password.html")
