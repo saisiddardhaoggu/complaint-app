@@ -12,14 +12,16 @@ def init_db():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS complaints (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         phone TEXT,
+        date TEXT,
         branch TEXT,
         college TEXT,
-        description TEXT,
-        date TEXT
+        description TEXT
     )
     """)
+
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users (

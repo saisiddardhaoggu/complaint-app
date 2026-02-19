@@ -99,18 +99,18 @@ def dashboard():
     complaints = get_complaints()
     return render_template("dashboard.html", complaints=complaints)
 
-@app.route("/change-password", methods=["GET", "POST"])
+@app.route("/change_password", methods=["GET", "POST"])
 def change_password():
     if request.method == "POST":
         new_password = request.form.get("password")
 
-        if not new_password:
-            return redirect("/change-password")
+        if new_password:
+            update_password("principal", new_password)
 
-        update_password("principal", new_password)
         return redirect("/dashboard")
 
     return render_template("change_password.html")
+
 
 
 @app.route("/logout")
