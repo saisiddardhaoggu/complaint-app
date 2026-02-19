@@ -2,7 +2,8 @@ import os
 import psycopg2
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-
+def get_db_connection():
+    return psycopg2.connect(os.environ.get("DATABASE_URL"))
 def get_conn():
     return psycopg2.connect(DATABASE_URL)
 
@@ -61,7 +62,10 @@ def get_complaints():
     data = cur.fetchall()
     conn.close()
     return data
+
 def update_password(username, new_password):
+    print("Password update function called")   # <-- ADD THIS LINE
+
     conn = get_conn()
     cur = conn.cursor()
 
@@ -72,4 +76,4 @@ def update_password(username, new_password):
 
     conn.commit()
     conn.close()
-     
+ 
