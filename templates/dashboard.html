@@ -39,24 +39,25 @@
 <br><br>
 <table border="1" width="100%">
     <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Branch</th>
-        <th>College</th>
-        <th>Description</th>
-        <th>Date</th>
-    </tr>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Branch</th>
+    <th>College</th>
+    <th>Description</th>
+    <th>Date</th>
+</tr>
 
-    {% for c in complaints %}
-    <tr>
-        <td>{{ c[0] }}</td>
-        <td>{{ c[1] }}</td>
-        <td>{{ c[2] }}</td>
-        <td>{{ c[3] }}</td>
-        <td>{{ c[4] }}</td>
-        <td>{{ c[5] }}</td>
-    </tr>
-    {% endfor %}
+{% for c in complaints %}
+<tr>
+    <td>{{ c[0] }}</td>
+    <td>{{ c[1] }}</td>
+    <td>{{ c[2] }}</td>
+    <td>{{ c[3] }}</td>
+    <td>{{ c[4] }}</td>
+    <td>{{ c[5] }}</td>
+</tr>
+{% endfor %}
+
 </table>
 
 </body>

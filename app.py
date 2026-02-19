@@ -107,11 +107,9 @@ def change_password():
         if new_password:
             update_password("principal", new_password)
 
-        return redirect("/dashboard")
+        return redirect("/login")
 
     return render_template("change_password.html")
-
-
 
 @app.route("/logout")
 def logout():
