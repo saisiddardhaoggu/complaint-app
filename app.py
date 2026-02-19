@@ -99,17 +99,26 @@ def dashboard():
     complaints = get_complaints()
     return render_template("dashboard.html", complaints=complaints)
 
-@app.route("/change_password", methods=["GET", "POST"])
+@app.route("/change_password", methods=["GET","POST"])
 def change_password():
-    if request.method == "POST":
-        new_password = request.form.get("password")
-
-        if new_password:
-            update_password("principal", new_password)
-
+    if "admin" not in session:
         return redirect("/login")
 
+    if request.method == "POST":
+        new_password = request.form["new_password"]
+
+        conn = get_db_connection() # pyright: ignore[reportUndefinedVariable]
+        conn.execute(
+            "UPDATE admin SET password=? WHERE username=?",
+            (new_password, session["admin"])
+        )
+        conn.commit()
+        conn.close()
+
+        return redirect("/dashboard")
+
     return render_template("change_password.html")
+
 
 @app.route("/logout")
 def logout():

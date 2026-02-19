@@ -72,3 +72,4 @@ def update_password(username, new_password):
 
     conn.commit()
     conn.close()
+     
