@@ -7,7 +7,6 @@ from database import get_complaints
 from datetime import datetime
 from flask import session, redirect, url_for
 from database import update_password
-init_db()
 import os
 
 
@@ -104,11 +103,15 @@ def dashboard():
 def change_password():
     if request.method == "POST":
         new_password = request.form.get("password")
-        if new_password:
-            update_password("principal", new_password)
+
+        if not new_password:
+            return redirect("/change-password")
+
+        update_password("principal", new_password)
         return redirect("/dashboard")
 
     return render_template("change_password.html")
+
 
 @app.route("/logout")
 def logout():
