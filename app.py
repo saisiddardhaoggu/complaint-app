@@ -5,7 +5,6 @@ from reportlab.pdfgen import canvas
 from database import get_db_connection, init_db
 from datetime import datetime
 from flask import session, redirect, url_for
-from database import get_db_connection, update_password
 import os
 
 
