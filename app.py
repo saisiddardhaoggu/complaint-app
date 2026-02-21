@@ -6,7 +6,15 @@ from database import get_db_connection, init_db
 from datetime import datetime
 from flask import session, redirect, url_for
 import os
-
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from flask import send_file
 
 app = Flask(__name__)
 app.secret_key = "college_secret_key"
@@ -134,6 +142,46 @@ def change_password():
         return redirect("/login")
 
     return render_template("change_password.html")
+@app.route("/download_letter")
+def download_letter():
+
+    conn = get_db_connection()
+    complaint = conn.execute(
+        "SELECT * FROM complaints ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    conn.close()
+
+    if not complaint:
+        return "No complaint found"
+
+    file_path = "complaint_letter.pdf"
+    doc = SimpleDocTemplate(file_path, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    text = f"""
+    To,
+    The Principal,
+    {complaint['college']}
+
+    Subject: Complaint regarding issue in {complaint['branch']} department
+
+    I, {complaint['name']}, would like to bring to your notice:
+
+    {complaint['description']}
+
+    Kindly take necessary action.
+
+    Yours sincerely,
+    {complaint['name']}
+    Phone: {complaint['phone']}
+    Date: {complaint['date']}
+    """
+
+    elements.append(Paragraph(text.replace("\n", "<br/>"), styles["Normal"]))
+    doc.build(elements)
+
+    return send_file(file_path, as_attachment=True)
 
 @app.route("/logout")
 def logout():
