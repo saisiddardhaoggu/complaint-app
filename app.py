@@ -36,26 +36,32 @@ def create_pdf(text):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    complaint = ""
 
     if request.method == "POST":
-        name = request.form.get("name")
-        phone = request.form.get("phone")
-        branch = request.form.get("location")
-        college = request.form.get("station")
-        description = request.form.get("description")
+        try:
+            name = request.form["name"]
+            phone = request.form["phone"]
+            branch = request.form["branch"]
+            college = request.form["college"]
+            description = request.form["description"]
+            date = request.form["date"]
 
-        from datetime import datetime
-        date = datetime.now().strftime("%d-%m-%Y")
+            conn = get_db_connection()
+            conn.execute("""
+                INSERT INTO complaints 
+                (name, phone, branch, college, description, date)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (name, phone, branch, college, description, date))
 
-        complaint = generate_complaint(
-            name, phone, date, branch, college, description
-        )
+            conn.commit()
+            conn.close()
 
-        insert_complaint(name, phone, date, branch, college, description) # type: ignore
-        create_pdf(complaint)
+            return "Complaint Submitted Successfully"
 
-    return render_template("index.html", complaint=complaint)
+        except Exception as e:
+            return f"Error: {str(e)}"
+
+    return render_template("index.html")
 
 @app.route("/download")
 def download_file():
