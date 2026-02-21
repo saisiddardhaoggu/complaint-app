@@ -71,89 +71,65 @@ import sqlite3
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form["username"]
+        password = request.form["password"]
 
-        conn = sqlite3.connect("complaints.db")
-        cur = conn.cursor()
-
-        cur.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username, password),
-        )
-
-        user = cur.fetchone()
+        conn = get_db_connection()
+        user = conn.execute(
+            "SELECT * FROM admin WHERE username=? AND password=?",
+            (username, password)
+        ).fetchone()
         conn.close()
 
         if user:
-            session["user"] = username
+            session["admin"] = username
             return redirect("/dashboard")
+        else:
+            return "Invalid Credentials"
 
     return render_template("login.html")
 
 @app.route("/dashboard")
 def dashboard():
-    if "user" not in session:
+    if "admin" not in session:
         return redirect("/login")
 
-    complaints = get_complaints()
+    conn = get_db_connection()
+    complaints = conn.execute("SELECT * FROM complaints ORDER BY id DESC").fetchall()
+    conn.close()
+
     return render_template("dashboard.html", complaints=complaints)
 
 import re
-
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
 
-    if "user" not in session:
+    if "admin" not in session:
         return redirect("/login")
 
     if request.method == "POST":
         new_password = request.form["password"]
 
-        # 🔐 Validations
         if len(new_password) < 8:
             return "Password must be at least 8 characters"
 
-        if not re.search("[A-Z]", new_password):
-            return "Must contain 1 uppercase letter"
-
-        if not re.search("[a-z]", new_password):
-            return "Must contain 1 lowercase letter"
-
-        if not re.search("[0-9]", new_password):
-            return "Must contain 1 number"
-
-        # ✅ Update DB
         conn = get_db_connection()
-        cur = conn.cursor()
-
-        cur.execute(
-            "UPDATE principal SET password=%s WHERE username=%s",
-            (new_password, session["user"])
+        conn.execute(
+            "UPDATE admin SET password=? WHERE username=?",
+            (new_password, session["admin"])
         )
-
         conn.commit()
-        cur.close()
         conn.close()
 
-        return redirect("/dashboard")
+        return redirect("/login")
 
     return render_template("change_password.html")
-
 
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     return redirect("/login")
-@app.route("/clear")
-def clear():
-    import sqlite3
-    conn = sqlite3.connect("complaints.db")
-    cur = conn.cursor()
-    cur.execute("DELETE FROM complaints")
-    conn.commit()
-    conn.close()
-    return "Complaints cleared successfully!"
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

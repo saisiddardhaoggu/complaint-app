@@ -1,79 +1,44 @@
-import os
-import psycopg2
+import sqlite3
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DB_NAME = "complaints.db"
+
 def get_db_connection():
-    return psycopg2.connect(os.environ.get("DATABASE_URL"))
-def get_conn():
-    return psycopg2.connect(DATABASE_URL)
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 
 def init_db():
-    conn = get_conn()
-    cur = conn.cursor()
+    conn = get_db_connection()
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS complaints (
-        name TEXT,
-        phone TEXT,
-        branch TEXT,
-        college TEXT,
-        description TEXT,
-        date TEXT
-    )
+    # Admin table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS admin (
+            username TEXT PRIMARY KEY,
+            password TEXT
+        )
     """)
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password TEXT
-    )
-    """)
-
-    cur.execute("SELECT * FROM users WHERE username=%s", ("principal",))
-    if not cur.fetchone():
-        cur.execute(
-            "INSERT INTO users VALUES (%s,%s)",
-            ("principal", "admin123"),
+    # Default admin
+    user = conn.execute("SELECT * FROM admin WHERE username='principal'").fetchone()
+    if not user:
+        conn.execute(
+            "INSERT INTO admin (username, password) VALUES (?, ?)",
+            ("principal", "admin123")
         )
 
-    conn.commit()
-    conn.close()
-
-def insert_complaint(name, phone, branch, college, description, date):
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute(
-        """
-        INSERT INTO complaints
-        (name, phone, branch, college, description, date)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """,
-        (name, phone, branch, college, description, date),
-    )
+    # Complaints table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS complaints (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            phone TEXT,
+            branch TEXT,
+            college TEXT,
+            description TEXT,
+            date TEXT
+        )
+    """)
 
     conn.commit()
     conn.close()
-
-def get_complaints():
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM complaints")
-    data = cur.fetchall()
-    conn.close()
-    return data
-
-def update_password(username, new_password):
-    print("Password update function called")   # <-- ADD THIS LINE
-
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute(
-        "UPDATE users SET password=%s WHERE username=%s",
-        (new_password, username),
-    )
-
-    conn.commit()
-    conn.close()
- 
