@@ -42,3 +42,11 @@ def init_db():
 
     conn.commit()
     conn.close()
+def insert_complaint(name, phone, branch, college, description, date):
+     conn = get_db_connection()
+     conn.execute("""
+        INSERT INTO complaints (name, phone, branch, college, description, date)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (name, phone, branch, college, description, date))
+     conn.commit()
+     conn.close()
