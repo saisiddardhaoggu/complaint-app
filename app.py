@@ -60,7 +60,15 @@ def home():
         conn.commit()
         conn.close()
 
-        return "Complaint Submitted Successfully"
+        return render_template(
+    "letter.html",
+    name=name,
+    phone=phone,
+    branch=branch,
+    college=college,
+    description=description,
+    date=date
+)
 
     return render_template("index.html")
 
