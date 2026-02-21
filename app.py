@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, send_file
 from complaint_generator import generate_complaint
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from database import get_db_connection, init_db, insert_complaint
+from database import get_db_connection, init_db
 from database import get_complaints
 from datetime import datetime
 from flask import session, redirect, url_for
@@ -54,7 +54,7 @@ def home():
             name, phone, date, branch, college, description
         )
 
-        insert_complaint(name, phone, date, branch, college, description)
+        insert_complaint(name, phone, date, branch, college, description) # type: ignore
         create_pdf(complaint)
 
     return render_template("index.html", complaint=complaint)
