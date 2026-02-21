@@ -38,28 +38,29 @@ def create_pdf(text):
 def home():
 
     if request.method == "POST":
-        try:
-            name = request.form["name"]
-            phone = request.form["phone"]
-            branch = request.form["branch"]
-            college = request.form["college"]
-            description = request.form["description"]
-            date = request.form["date"]
 
-            conn = get_db_connection()
-            conn.execute("""
-                INSERT INTO complaints 
-                (name, phone, branch, college, description, date)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (name, phone, branch, college, description, date))
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        branch = request.form.get("location")   # 🔥 change here
+        college = request.form.get("station")  # 🔥 change here
+        description = request.form.get("description")
 
-            conn.commit()
-            conn.close()
+        date = "N/A"  # Since no date field in form
 
-            return "Complaint Submitted Successfully"
+        if not all([name, phone, branch, college, description]):
+            return "Form data missing"
 
-        except Exception as e:
-            return f"Error: {str(e)}"
+        conn = get_db_connection()
+        conn.execute("""
+            INSERT INTO complaints 
+            (name, phone, branch, college, description, date)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (name, phone, branch, college, description, date))
+
+        conn.commit()
+        conn.close()
+
+        return "Complaint Submitted Successfully"
 
     return render_template("index.html")
 
