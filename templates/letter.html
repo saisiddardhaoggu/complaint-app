@@ -1,32 +1,91 @@
-<h2>Generated Complaint Letter</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generated Complaint</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
 
-<p>
-To,<br>
-The Principal,<br>
-{{ college }}<br>
-</p>
+        .letter-box {
+            background: white;
+            padding: 40px;
+            width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
 
-<p>
-Subject: Complaint regarding issue in {{ branch }} department
-</p>
+        h2 {
+            text-align: center;
+            color: #333;
+        }
 
-<p>
-Respected Sir/Madam,<br><br>
+        .btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-I, {{ name }}, from {{ branch }} branch, would like to inform you that:<br><br>
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+        }
 
-{{ description }}<br><br>
+        .back-btn {
+            background-color: #007bff;
+            color: white;
+        }
 
-Kindly take necessary action.<br><br>
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
 
-Thanking you.<br><br>
+<div class="letter-box">
+    <h2>Generated Complaint Letter</h2>
 
-Yours sincerely,<br>
-{{ name }}<br>
-Phone: {{ phone }}<br>
-Date: {{ date }}
-</p>
-<br><br>
-<a href="/download_letter">
-    <button>Download PDF</button>
-</a>
+    <p>
+        To,<br>
+        The Principal,<br>
+        {{ college }}<br><br>
+
+        Subject: Complaint regarding issue in {{ branch }} department<br><br>
+
+        Respected Sir/Madam,<br><br>
+
+        I, {{ name }}, from {{ branch }} branch, would like to inform you that:<br><br>
+
+        {{ description }}<br><br>
+
+        Kindly take necessary action.<br><br>
+
+        Thanking you.<br><br>
+
+        Yours sincerely,<br>
+        {{ name }}<br>
+        Phone: {{ phone }}<br>
+        Date: {{ date }}
+    </p>
+
+    <div class="button-container">
+        <a href="/download_letter">
+            <button class="btn download-btn">Download PDF</button>
+        </a>
+
+        <a href="/">
+            <button class="btn back-btn">Back to Home</button>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

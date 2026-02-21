@@ -109,11 +109,14 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
+
     if "admin" not in session:
         return redirect("/login")
 
     conn = get_db_connection()
-    complaints = conn.execute("SELECT * FROM complaints ORDER BY id DESC").fetchall()
+    complaints = conn.execute(
+        "SELECT * FROM complaints ORDER BY id DESC"
+    ).fetchall()
     conn.close()
 
     return render_template("dashboard.html", complaints=complaints)
@@ -185,7 +188,7 @@ def download_letter():
 
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
+    session.clear()
     return redirect("/login")
 
 if __name__ == "__main__":
